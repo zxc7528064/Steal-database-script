@@ -2,8 +2,8 @@
 setlocal enabledelayedexpansion
 
 :: Initialize variables
-set targetDir=%temp%\collected_files
-set zipFile=%temp%\collected_files.zip
+set targetDir=C:\Windows\Temp\collected_files
+set zipFile=C:\Windows\Temp\collected_files.zip
 set fileCount=0
 set count=0
 
