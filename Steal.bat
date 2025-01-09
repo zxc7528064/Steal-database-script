@@ -1,54 +1,54 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: 初始化变量
+:: Initialize variables
 set targetDir=%temp%\collected_files
 set zipFile=%temp%\collected_files.zip
 set fileCount=0
 set count=0
 
-:: 获取所有磁盘并存储到数组
+:: Get all drives and store them in an array
 for /f "tokens=1 delims=" %%d in ('wmic logicaldisk get caption ^| find ":"') do (
     set "drive[!count!]=%%d"
     set /a count+=1
 )
 
-:: 检查并创建目标文件夹
+:: Check and create the target directory
 if not exist "%targetDir%" (
     mkdir "%targetDir%"
 )
 
-:: 遍历每个磁盘
+:: Iterate through each drive
 for /L %%i in (0,1,%count%-1) do (
     set "currentDrive=!drive[%%i]!"
-    echo 正在处理磁盘 !currentDrive!...
+    echo Processing drive !currentDrive!...
     call :processDrive !currentDrive!
 )
 
-:: 输出文件统计结果
+:: Output the file statistics
 if %fileCount% gtr 0 (
-    echo 已复制 %fileCount% 个文件到 %targetDir%。 
+    echo Copied %fileCount% files to %targetDir%.
 ) else (
-    echo 未找到符合条件的文件。
+    echo No matching files found.
 )
 
-:: 压缩文件夹到 ZIP
-echo 正在压缩文件夹到 ZIP...
+:: Compress the folder into a ZIP file
+echo Compressing the folder into a ZIP file...
 if exist "%zipFile%" (
     del "%zipFile%"
-    echo 已删除旧的 ZIP 文件。
+    echo Deleted the old ZIP file.
 )
 powershell -Command "Compress-Archive -Path '%targetDir%\*' -DestinationPath '%zipFile%' -Force"
 
-:: 检查压缩结果
+:: Check compression results
 if exist "%zipFile%" (
-    echo 压缩完成！文件路径：%zipFile%
+    echo Compression completed! File path: %zipFile%
 ) else (
-    echo 压缩失败！
+    echo Compression failed!
 )
 
-:: 清理临时文件夹（可选）
-:: echo 正在清理临时文件夹...
+:: Clean up the temporary folder (optional)
+:: echo Cleaning up the temporary folder...
 :: rmdir /s /q "%targetDir%"
 
 pause
